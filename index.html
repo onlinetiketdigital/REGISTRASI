@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Run Registration</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+background:#f4f6f9;
+}
+
+.container{
+max-width:800px;
+margin:auto;
+background:white;
+min-height:100vh;
+}
+
+.banner{
+width:100%;
+display:block;
+}
+
+.timer-box{
+text-align:center;
+padding:20px;
+background:#111;
+color:white;
+font-size:28px;
+font-weight:bold;
+}
+
+.form-page{
+padding:25px;
+display:none;
+}
+
+.form-page.active{
+display:block;
+animation:fade .4s;
+}
+
+@keyframes fade{
+from{opacity:0}
+to{opacity:1}
+}
+
+h2{
+margin-bottom:20px;
+color:#111;
+}
+
+label{
+display:block;
+margin-top:15px;
+font-weight:600;
+}
+
+input,select,textarea{
+width:100%;
+padding:12px;
+margin-top:5px;
+border:1px solid #ddd;
+border-radius:8px;
+font-size:15px;
+}
+
+.radio-group{
+display:flex;
+gap:20px;
+margin-top:10px;
+}
+
+.radio-group label{
+font-weight:normal;
+}
+
+.btn{
+margin-top:25px;
+width:100%;
+padding:14px;
+border:none;
+background:#111;
+color:white;
+font-size:16px;
+font-weight:bold;
+border-radius:10px;
+cursor:pointer;
+}
+
+.btn:hover{
+background:#000;
+}
+
+.summary{
+background:#f7f7f7;
+padding:15px;
+border-radius:10px;
+line-height:2;
+}
+
+.qris{
+width:100%;
+max-width:350px;
+display:block;
+margin:auto;
+margin-top:20px;
+margin-bottom:20px;
+}
+
+.sizechart{
+width:100%;
+margin-top:15px;
+border-radius:10px;
+}
+
+.loading-screen{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#0a0a0a;
+display:none;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:9999;
+color:white;
+}
+
+.loader{
+width:120px;
+height:120px;
+border:8px solid rgba(255,255,255,.1);
+border-top:8px solid #00ffcc;
+border-radius:50%;
+animation:spin 1s linear infinite;
+margin-bottom:30px;
+}
+
+@keyframes spin{
+100%{transform:rotate(360deg);}
+}
+
+.loading-title{
+font-size:28px;
+font-weight:bold;
+margin-bottom:15px;
+}
+
+.loading-text{
+font-size:18px;
+opacity:.9;
+}
+
+.pending{
+font-size:34px;
+font-weight:bold;
+color:#00ff99;
+display:none;
+margin-top:25px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<img src="banner.png" class="banner">
+
+<div class="timer-box">
+⏰ <span id="timer">10:00</span>
+</div>
+
+<!-- PAGE 1 -->
+
+<div class="form-page active" id="page1">
+
+<h2>Data Peserta</h2>
+
+<label>Nama Lengkap</label>
+<input type="text" id="nama" required>
+
+<label>Tempat / Tanggal Lahir</label>
+<input type="text" id="ttl" required>
+
+<label>Jenis Kelamin</label>
+<div class="radio-group">
+<label><input type="radio" name="jk" value="Laki-Laki"> Laki-Laki</label>
+<label><input type="radio" name="jk" value="Perempuan"> Perempuan</label>
+</div>
+
+<label>Nomor Identitas</label>
+<input type="text" id="identitas" required>
+
+<label>E-mail</label>
+<input type="email" id="email" required>
+
+<label>No Whatsapp</label>
+<input type="tel" id="wa" required>
+
+<label>Alamat / Tempat Tinggal</label>
+<textarea id="alamat" required></textarea>
+
+<button class="btn" onclick="next1()">Lanjut</button>
+
+</div>
+
+<!-- PAGE 2 -->
+
+<div class="form-page" id="page2">
+
+<h2>Informasi Event</h2>
+
+<label>Nama BIB (Nama Jersey)</label>
+<input type="text" id="bib" required>
+
+<label>Category</label>
+<select id="kategori">
+<option value="">Pilih Category</option>
+<option value="5K - Rp.150.000">5K - Rp.150.000</option>
+<option value="10K - Rp.175.000">10K - Rp.175.000</option>
+</select>
+
+<img src="sizechart.png" class="sizechart">
+
+<label>Size Jersey</label>
+<select id="size">
+<option value="">Pilih Size</option>
+<option>XS</option>
+<option>S</option>
+<option>M</option>
+<option>L</option>
+<option>XL</option>
+<option>XXL</option>
+<option>XXXL</option>
+</select>
+
+<label>Metode Pembayaran</label>
+<select id="payment">
+<option value="">Pilih Pembayaran</option>
+<option>M-Banking</option>
+<option>E-Wallet</option>
+</select>
+
+<button class="btn" onclick="next2()">Lanjut</button>
+
+</div>
+
+<!-- PAGE 3 -->
+
+<div class="form-page" id="page3">
+
+<h2>Ringkasan Data Peserta</h2>
+
+<div class="summary" id="summary"></div>
+
+<img src="qris.png" class="qris">
+
+<h3 style="text-align:center;margin-bottom:20px;">
+Jumlah Yang Harus Dibayar :
+<span id="totalBayar"></span>
+</h3>
+
+<label>Upload Bukti Pembayaran</label>
+<input type="file" id="bukti" accept="image/*">
+
+<label style="margin-top:20px;">
+<input type="checkbox" id="agree">
+Saya menyatakan bahwa seluruh data yang saya isi adalah benar dan dapat dipertanggungjawabkan serta bersedia mengikuti seluruh ketentuan event yang berlaku.
+</label>
+
+<button class="btn" onclick="registerNow()">
+REGISTER NOW
+</button>
+
+</div>
+
+</div>
+
+<!-- LOADING -->
+
+<div class="loading-screen" id="loading">
+
+<div class="loader"></div>
+
+<div class="loading-title">
+Sedang dalam Proses Verifikasi
+</div>
+
+<div class="loading-text">
+Mohon menunggu...
+</div>
+
+<div class="pending" id="pending">
+REGISTRATION PENDING
+</div>
+
+</div>
+
+<script>
+
+function next1(){
+
+if(
+!nama.value ||
+!ttl.value ||
+!identitas.value ||
+!email.value ||
+!wa.value ||
+!alamat.value ||
+!document.querySelector('input[name="jk"]:checked')
+){
+alert("Harap lengkapi seluruh data.");
+return;
+}
+
+page1.classList.remove("active");
+page2.classList.add("active");
+
+}
+
+function next2(){
+
+if(
+!bib.value ||
+!kategori.value ||
+!size.value ||
+!payment.value
+){
+alert("Harap lengkapi seluruh data.");
+return;
+}
+
+let total = kategori.value.includes("150")
+? "Rp.150.000"
+: "Rp.175.000";
+
+document.getElementById("totalBayar").innerHTML = total;
+
+document.getElementById("summary").innerHTML=`
+<b>Nama :</b> ${nama.value}<br>
+<b>TTL :</b> ${ttl.value}<br>
+<b>Jenis Kelamin :</b> ${document.querySelector('input[name="jk"]:checked').value}<br>
+<b>Email :</b> ${email.value}<br>
+<b>Whatsapp :</b> ${wa.value}<br>
+<b>Alamat :</b> ${alamat.value}<br>
+<b>Nama BIB :</b> ${bib.value}<br>
+<b>Kategori :</b> ${kategori.value}<br>
+<b>Size Jersey :</b> ${size.value}<br>
+<b>Pembayaran :</b> ${payment.value}
+`;
+
+page2.classList.remove("active");
+page3.classList.add("active");
+
+}
+
+function registerNow(){
+
+if(!bukti.files.length){
+alert("Upload bukti pembayaran terlebih dahulu.");
+return;
+}
+
+if(!agree.checked){
+alert("Centang pernyataan terlebih dahulu.");
+return;
+}
+
+document.getElementById("loading").style.display="flex";
+
+setTimeout(function(){
+
+document.getElementById("pending").style.display="block";
+
+},60000);
+
+setTimeout(function(){
+
+window.location.href="https://www.qrispurwokerto.run";
+
+},65000);
+
+}
+
+let duration=600;
+let timer=document.getElementById("timer");
+
+setInterval(function(){
+
+let minutes=Math.floor(duration/60);
+let seconds=duration%60;
+
+timer.innerHTML=
+String(minutes).padStart(2,'0')
++":"+
+String(seconds).padStart(2,'0');
+
+if(duration>0){
+duration--;
+}
+
+},1000);
+
+</script>
+
+</body>
+</html>
